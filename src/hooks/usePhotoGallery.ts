@@ -111,9 +111,13 @@ export function usePhotoGallery() {
     console.log('new category:');
     console.log(photo.category);
     newPhotos.forEach(p => {
-      if(p.filepath == photo.filepath) p = photo;
+      if(p.filepath == photo.filepath) {
+        p.category = photo.category ? photo.category : p.category;
+        p.uploaded = photo.uploaded ? photo.uploaded : p.uploaded;
+      };
     });
     set(PHOTO_STORAGE, JSON.stringify(newPhotos));
+    setPhotos(newPhotos);
     
   }
   

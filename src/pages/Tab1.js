@@ -1,16 +1,17 @@
 
 import React, {useState} from 'react';
-import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonFab, IonFabButton, IonIcon, IonGrid, IonRow, IonCol, IonImg, IonActionSheet, IonLabel } from '@ionic/react';
-import { camera, trash, close } from 'ionicons/icons';
+import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonFab, IonFabButton, IonIcon, IonGrid, IonRow, IonCol, IonImg, IonActionSheet, IonLabel, IonButton } from '@ionic/react';
+import { camera, trash, close, cloudDoneOutline } from 'ionicons/icons';
 import { usePhotoGallery } from '../hooks/usePhotoGallery';
 import classes from '../data/classes';
+import useForceUpdate from 'use-force-update';
+
 
 const Tab1 = (props) => {
 
   const { takePhoto, photos, deletePhoto } = usePhotoGallery();
   const [selectedPhoto, setSelectedPhoto] = useState();
-
-  console.log(photos);
+  const forceUpdate = useForceUpdate();
   
   return (
     <IonPage>
@@ -32,12 +33,12 @@ const Tab1 = (props) => {
               <IonCol size="6" key={index}>
                 <IonImg onClick={() => {
                     props.history.push({
-                      pathname: '/details',
+                      pathname: '/details/'+photo.filepath,
                       photo: photo
                     })
                 }} 
                 src={photo.base64 ?? photo.webviewPath} />
-                <IonLabel>{photo.category || classes[0]}</IonLabel>
+                <div style={{color: 'var(--ion-color-primary)'}}>{photo.category} {photo.uploaded && <IonIcon icon={cloudDoneOutline}/>}</div>
               </IonCol>
             ))}
           </IonRow>
@@ -49,32 +50,7 @@ const Tab1 = (props) => {
           </IonFabButton>
         </IonFab>
 
-        <IonActionSheet
-          isOpen={!!selectedPhoto}
-          buttons={[{
-            text: 'Löschen',
-            role: 'destructive',
-            handler: () => {
-              if (selectedPhoto) {
-                deletePhoto(selectedPhoto);
-                setSelectedPhoto(undefined);
-              }
-            }
-          }, {
-            text: 'Kategorisieren',
-            handler: () => {
-              props.history.push({
-                pathname: '/details',
-                photo: selectedPhoto
-              })
-            }
-          },{
-            text: 'Abbrechen',
-            role: 'cancel'
-          }]}
-          onDidDismiss={() => setSelectedPhoto(undefined)}
-        />
-
+      <IonButton onClick={() => {forceUpdate()}}>update</IonButton>
       </IonContent>
     </IonPage>
   );

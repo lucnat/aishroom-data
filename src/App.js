@@ -35,30 +35,43 @@ import './theme/variables.css';
 
 import { setupConfig } from '@ionic/react';
 import { Details } from './pages/Details';
+
+// for ionic preview
 const mode = (window.location.search.split('mode=')[1]||'').split('&')[0];
 if(mode) setupConfig({mode});
 
-const App = () => (
-  <IonApp>
-    <IonReactRouter>
-      <IonTabs>
-        <IonRouterOutlet>
-          <Route path="/tab1" component={Tab1} exact={true} />
-          <Route path="/tab2" component={Tab2} exact={true} />
-          <Route path="/details" component={Details} exact={true} />
-          <Route path="/" render={() => <Redirect to="/tab1" />} exact={true} />
-        </IonRouterOutlet>
-        <IonTabBar slot="bottom">
-          <IonTabButton tab="tab1" href="/tab1">
-            <IonIcon icon={images} />
-          </IonTabButton>
-          <IonTabButton tab="tab2" href="/tab2">
-            <IonIcon icon={informationCircleSharp} />
-          </IonTabButton>
-        </IonTabBar>
-      </IonTabs>
-    </IonReactRouter>
-  </IonApp>
-);
+let username = '';
+if(!localStorage.getItem('username')) {
+  while (username.length < 3) {
+    username = prompt('username eingeben (mind. 3 Zeichen)');
+  }  
+  localStorage.setItem('username',username);
+  
+}
+
+const App = () => {
+  return (
+    <IonApp>
+      <IonReactRouter>
+        <IonTabs>
+          <IonRouterOutlet>
+            <Route path="/tab1" component={Tab1} exact={true} />
+            <Route path="/tab2" component={Tab2} exact={true} />
+            <Route path="/details/:filepath" component={Details} exact={true} />
+            <Route path="/" render={() => <Redirect to="/tab1" />} exact={true} />
+          </IonRouterOutlet>
+          <IonTabBar slot="bottom">
+            <IonTabButton tab="tab1" href="/tab1">
+              <IonIcon icon={images} />
+            </IonTabButton>
+            <IonTabButton tab="tab2" href="/tab2">
+              <IonIcon icon={informationCircleSharp} />
+            </IonTabButton>
+          </IonTabBar>
+        </IonTabs>
+      </IonReactRouter>
+    </IonApp>
+  )
+};
 
 export default App;
