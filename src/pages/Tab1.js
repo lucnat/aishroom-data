@@ -12,6 +12,9 @@ const Tab1 = (props) => {
   const { takePhoto, photos, deletePhoto } = usePhotoGallery();
   const [selectedPhoto, setSelectedPhoto] = useState();
   const forceUpdate = useForceUpdate();
+
+  console.log('PHOTOS RETURNED:');
+  console.log(photos);
   
   return (
     <IonPage>
@@ -32,6 +35,7 @@ const Tab1 = (props) => {
             {photos.map((photo, index) => (
               <IonCol size="6" key={index}>
                 <IonImg onClick={() => {
+                    setSelectedPhoto(photo.pathname)
                     props.history.push({
                       pathname: '/details/'+photo.filepath,
                       photo: photo
@@ -50,7 +54,9 @@ const Tab1 = (props) => {
           </IonFabButton>
         </IonFab>
 
-      <IonButton onClick={() => {forceUpdate()}}>update</IonButton>
+        {selectedPhoto}
+
+      <IonButton onClick={() => {setSelectedPhoto(null)}}>update</IonButton>
       </IonContent>
     </IonPage>
   );

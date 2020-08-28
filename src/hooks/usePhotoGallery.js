@@ -6,33 +6,29 @@ import { useStorage } from '@ionic/react-hooks/storage';
 import { isPlatform } from '@ionic/react';
 import { CameraResultType, CameraSource, CameraPhoto, Capacitor, FilesystemDirectory } from "@capacitor/core";
 
-export interface Photo {
-  filepath: string;
-  webviewPath?: string;
-  category?: string;
-  base64?: string;
-  uploaded?: boolean;
-}
 
 const PHOTO_STORAGE = "photos";
 
 export function usePhotoGallery() {
 
-  const [photos, setPhotos] = useState<Photo[]>([]);
+  const [photos, setPhotos] = useState([]);
+
+  console.log('photos in hook are ',photos);
+
   const { getPhoto } = useCamera();
   const { deleteFile, getUri, readFile, writeFile } = useFilesystem();
   const { get, set } = useStorage();
 
-  const savePicture = async (photo: CameraPhoto, fileName: string): Promise<Photo> => {
-    let base64Data: string;
+  const savePicture = async (photo, fileName) => {
+    let base64Data;
     // "hybrid" will detect Cordova or Capacitor;
     if (isPlatform('hybrid')) {
       const file = await readFile({
-        path: photo.path!
+        path: photo.path
       });
       base64Data = file.data;
     } else {
-      base64Data = await base64FromPath(photo.webPath!);
+      base64Data = await base64FromPath(photo.webPath);
     }
     const savedFile = await writeFile({
       path: fileName,
@@ -61,7 +57,7 @@ export function usePhotoGallery() {
   useEffect(() => {
     const loadSaved = async () => {
       const photosString = await get('photos');
-      const photosInStorage = (photosString ? JSON.parse(photosString) : []) as Photo[];
+      const photosInStorage = photosString && JSON.parse(photosString) ;
       // If running on the web...
       if (!isPlatform('hybrid')) {
         for (let photo of photosInStorage) {
@@ -106,7 +102,7 @@ export function usePhotoGallery() {
         
   };
 
-  const updatePhoto = async(photo: Photo) => {
+  const updatePhoto = async(photo) => {
     let newPhotos = photos;
     console.log('new category:');
     console.log(photo.category);
@@ -116,12 +112,11 @@ export function usePhotoGallery() {
         p.uploaded = photo.uploaded ? photo.uploaded : p.uploaded;
       };
     });
-    set(PHOTO_STORAGE, JSON.stringify(newPhotos));
     setPhotos(newPhotos);
-    
+    set(PHOTO_STORAGE, JSON.stringify(newPhotos));
   }
   
-  const deletePhoto = async (photo: Photo) => {
+  const deletePhoto = async (photo) => {
     // Remove this photo from the Photos reference data array
     const newPhotos = photos.filter(p => p.filepath !== photo.filepath);
   
@@ -134,6 +129,7 @@ export function usePhotoGallery() {
       path: filename,
       directory: FilesystemDirectory.Data
     });
+
     setPhotos(newPhotos);
   };
 
