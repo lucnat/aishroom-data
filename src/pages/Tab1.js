@@ -1,14 +1,17 @@
 
 import React, {useState} from 'react';
-import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonFab, IonFabButton, IonIcon, IonGrid, IonRow, IonCol, IonImg, IonActionSheet } from '@ionic/react';
+import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonFab, IonFabButton, IonIcon, IonGrid, IonRow, IonCol, IonImg, IonActionSheet, IonLabel } from '@ionic/react';
 import { camera, trash, close } from 'ionicons/icons';
 import { usePhotoGallery } from '../hooks/usePhotoGallery';
+import classes from '../data/classes';
 
 const Tab1 = (props) => {
 
   const { takePhoto, photos, deletePhoto } = usePhotoGallery();
   const [selectedPhoto, setSelectedPhoto] = useState();
 
+  console.log(photos);
+  
   return (
     <IonPage>
       <IonHeader>
@@ -24,7 +27,7 @@ const Tab1 = (props) => {
         </IonHeader>
 
         <IonGrid>
-          <IonRow>
+          <IonRow style={{textAlign: 'center', color: '#888'}}>
             {photos.map((photo, index) => (
               <IonCol size="6" key={index}>
                 <IonImg onClick={() => {
@@ -34,6 +37,7 @@ const Tab1 = (props) => {
                     })
                 }} 
                 src={photo.base64 ?? photo.webviewPath} />
+                <IonLabel>{photo.category || classes[0]}</IonLabel>
               </IonCol>
             ))}
           </IonRow>

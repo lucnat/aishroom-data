@@ -8,18 +8,19 @@ import { useState } from 'react';
 import { usePhotoGallery } from '../hooks/usePhotoGallery';
 import { useStorage } from '@ionic/react-hooks/storage';
 
+var Dropbox = require('dropbox').Dropbox
+var dbx = new Dropbox({ accessToken: 'N_btI-rHDx0AAAAAAAAAARx0SM4Dn0YixAaEbQ8sXbWYsdfgJxyvmaL3PET7izCR' })
+
 export const Details = (props) => {
   
   let photo = props.location.photo;
   if(!photo) photo = examplePhoto;
 
-  const [category, setCategory] = useState(classes[0]);
+  console.log(photo);
+
+  const [category, setCategory] = useState(photo.category ? photo.category : classes[0]);
   const {deletePhoto, updatePhoto} = usePhotoGallery();
   const {get, set} = useStorage();
-
-  get('photos').then(e => {
-    console.log(JSON.parse(e))
-  })
 
   return (
     <Page title="Details" large>
@@ -28,7 +29,11 @@ export const Details = (props) => {
           <IonList>
             <IonItem>
               <IonLabel>Kategorie</IonLabel>
-              <IonSelect value={category} onIonChange={e => setCategory(e.target.value)}>
+              <IonSelect value={category} onIonChange={e => {
+                  setCategory(e.target.value);
+                  photo.category = e.target.value;
+                  updatePhoto(photo);
+                }}>
                 {classes.map(c => <IonSelectOption key={c} value={c}>{c}</IonSelectOption>)}
               </IonSelect>
             </IonItem>
@@ -38,10 +43,8 @@ export const Details = (props) => {
               deletePhoto(photo);
               props.history.goBack();
             }}>Löschen</IonButton>
-            <IonButton onClick={() => {
-              photo.category = category;
-              updatePhoto(photo);
-            }}>Kategorie speichern</IonButton>
+            <br />
+            <IonButton>Zur Cloud hinzufügen</IonButton>
           </div>
         </div>
     </Page>

@@ -1,6 +1,18 @@
 
 const classes = [
-  'unbekannt', 'class 1', 'class 2'
+  'Unbekannt', 
+  'Austernpilz, Shiitake', 
+  'Fliegenpilz',
+  'Giftige Pilze',
+  'Gute Boleten',
+  'Gute Champignons',
+  'Gute Stäublinge',
+  'Gute Täublinge',
+  'Nelkenschwindling, Maipilz',
+  'Pfifferlinge',
+  'Schopf-Tintling',
+  'Speise-Morchel',
+  'Toten-Trompete'
 ];
 
 export default classes;

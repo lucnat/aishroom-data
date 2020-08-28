@@ -11,6 +11,7 @@ export interface Photo {
   webviewPath?: string;
   category?: string;
   base64?: string;
+  uploaded?: boolean;
 }
 
 const PHOTO_STORAGE = "photos";
@@ -110,7 +111,7 @@ export function usePhotoGallery() {
     console.log('new category:');
     console.log(photo.category);
     newPhotos.forEach(p => {
-      if(p.filepath == photo.filepath) p.category = photo.category;
+      if(p.filepath == photo.filepath) p = photo;
     });
     set(PHOTO_STORAGE, JSON.stringify(newPhotos));
     
