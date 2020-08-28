@@ -27,6 +27,7 @@ export function usePhotoGallery() {
         path: photo.path
       });
       base64Data = file.data;
+      alert(base64Data.substring(0,100))
     } else {
       base64Data = await base64FromPath(photo.webPath);
     }
@@ -132,7 +133,7 @@ export function usePhotoGallery() {
 
     setPhotos(newPhotos);
   };
-
+  
   return {
     takePhoto,
     photos,

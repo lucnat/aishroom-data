@@ -1,7 +1,7 @@
 
 import React from 'react';
 import Page from '../components/Page';
-import { IonImg, IonButton, IonSelect, IonList, IonLabel, IonSelectOption, IonItem, IonIcon, isPlatform } from '@ionic/react';
+import { IonImg, IonButton, IonSelect, IonList, IonLabel, IonSelectOption, IonItem, IonIcon, isPlatform, IonLoading } from '@ionic/react';
 import classes from '../data/classes';
 import { useState } from 'react';
 import { usePhotoGallery } from '../hooks/usePhotoGallery';
@@ -12,7 +12,6 @@ import { base64Path, useFilesystem } from '@ionic/react-hooks/filesystem';
 
 
 function dataURLtoFile(dataurl, filename) {
- 
   var arr = dataurl.split(','),
       mime = arr[0].match(/:(.*?);/)[1],
       bstr = atob(arr[1]), 
@@ -31,30 +30,26 @@ var dbx = new Dropbox({ accessToken: 'qCS5xD40AqkAAAAAAAAAAVqN9sMKd6-OWVvzeeltk4
 export const Details = (props) => {
   
   const {photos, deletePhoto, updatePhoto} = usePhotoGallery();
-  console.log(photos);
   const currentFilepath = props.match.params.filepath
   const photo = photos.filter(p => (p.filepath == currentFilepath))[0]
-  console.log(photo);
-  const [uploaded, setUploaded] = useState((photo && photo.uploaded) ? photo.uploaded : false)
-  const {get, set} = useStorage();
-  const { deleteFile, getUri, readFile, writeFile } = useFilesystem();
+  const [loading, setLoading] = useState(false)
+  const { readFile } = useFilesystem();
 
   const forceUpdate = useForceUpdate();
   if(!photo) return <Page />
 
-
-
   const uploadImage = async () => {
-    console.log('starte upload')
+    setLoading(true);
+    setTimeout(() => {setLoading(false)}, 20000)
     let file;
     let base64data;
     if(isPlatform('hybrid')) {
-      console.log('hybrid');
       file = await readFile({
         path: photo.filepath
       });
       base64data = file.data;
       base64data = "data:image/jpeg;base64,"+base64data;
+
       console.log('base64:')
       console.log(base64data.substring(0,100));
     } else {
@@ -72,6 +67,7 @@ export const Details = (props) => {
       photo.uploaded = true;
       updatePhoto(photo);
       forceUpdate();
+      setLoading(false);
     });
 
   }
@@ -99,6 +95,7 @@ export const Details = (props) => {
             }}>Löschen</IonButton>
             <br />
 
+            <IonLoading isOpen={loading}/>
             {photo.uploaded ? 
                 <p> <IonIcon icon={cloudDoneOutline} style={{width: 30, height: 30}}/> <br />Upload erfolgreich</p>
                 : 

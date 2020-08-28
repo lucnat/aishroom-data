@@ -7,7 +7,7 @@ class Tab2 extends React.Component {
   render() {
     return (
       <Page title="About" large padding>
-        <p>Dein username lautet <b>{localStorage.getItem('username')}</b>. <a href="#" onClick={e => {
+        <p>Dein username lautet <b>{localStorage.getItem('username')}</b>. <br/><a href="#" onClick={e => {
           e.preventDefault();
           const username = prompt('Username eingeben (mind. 3 Zeichen)');
           if(username.length < 3) alert('zu kurz')

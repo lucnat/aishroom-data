@@ -1,7 +1,7 @@
 
 import React, {useState} from 'react';
 import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonFab, IonFabButton, IonIcon, IonGrid, IonRow, IonCol, IonImg, IonActionSheet, IonLabel, IonButton, IonButtons } from '@ionic/react';
-import { camera, trash, close, cloudDoneOutline, refresh, add } from 'ionicons/icons';
+import { camera, trash, close, cloudDoneOutline, refresh, add, cloudDone } from 'ionicons/icons';
 import { usePhotoGallery } from '../hooks/usePhotoGallery';
 import useForceUpdate from 'use-force-update';
 import Page from '../components/Page';
@@ -39,7 +39,8 @@ const Tab1 = (props) => {
                     })
                 }} 
                 src={photo.base64 ?? photo.webviewPath} />
-                <div style={{color: 'var(--ion-color-primary)'}}>{photo.category} {photo.uploaded && <IonIcon icon={cloudDoneOutline}/>}</div>
+                <div style={{color: 'var(--ion-color-primary)'}}>{photo.category} {photo.uploaded && 
+               <span style={{position: 'absolute', bottom: 30}}><IonIcon icon={cloudDone}/></span>}</div>
               </IonCol>
             ))}
           </IonRow>
