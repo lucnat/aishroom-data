@@ -13,7 +13,7 @@ import {IonButtons, IonActionSheet, IonBackdrop, IonToolbar } from '@ionic/react
   Props: 
     - menu
     - renderButtonsRight
-    - renderDirectChildren
+    - renderDirectChildren, used for e.g. fab
 */
 
 const Page = (props) => {
@@ -50,7 +50,7 @@ const Page = (props) => {
         </div>
 
         {props.renderDirectChildren && props.renderDirectChildren()}
-        {/* <div style={{height: 50}}></div> */}
+        <div style={{height: 50}}></div> 
       </Ion.IonContent>
 
     </Ion.IonPage>
