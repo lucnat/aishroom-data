@@ -1,10 +1,11 @@
 
 import React, {useState} from 'react';
-import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonFab, IonFabButton, IonIcon, IonGrid, IonRow, IonCol, IonImg, IonActionSheet, IonLabel, IonButton } from '@ionic/react';
-import { camera, trash, close, cloudDoneOutline } from 'ionicons/icons';
+import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonFab, IonFabButton, IonIcon, IonGrid, IonRow, IonCol, IonImg, IonActionSheet, IonLabel, IonButton, IonButtons } from '@ionic/react';
+import { camera, trash, close, cloudDoneOutline, refresh } from 'ionicons/icons';
 import { usePhotoGallery } from '../hooks/usePhotoGallery';
 import classes from '../data/classes';
 import useForceUpdate from 'use-force-update';
+import Page from '../components/Page';
 
 
 const Tab1 = (props) => {
@@ -17,19 +18,13 @@ const Tab1 = (props) => {
   console.log(photos);
   
   return (
-    <IonPage>
-      <IonHeader>
-        <IonToolbar>
-          <IonTitle>Feldbuch</IonTitle>
-        </IonToolbar>
-      </IonHeader>
-      <IonContent fullscreen>
-        <IonHeader collapse="condense">
-          <IonToolbar>
-            <IonTitle size="large">Feldbuch</IonTitle>
-          </IonToolbar>
-        </IonHeader>
-
+    <Page title="Feldbuch" large renderButtonsRight={() =>     
+      <IonButton slot="end" onClick={() => {
+        window.location.href = window.location.href
+      }}>
+        <IonIcon icon={refresh}/>
+      </IonButton>
+    } >
         <IonGrid>
           <IonRow style={{textAlign: 'center', color: '#888'}}>
             {photos.map((photo, index) => (
@@ -57,8 +52,7 @@ const Tab1 = (props) => {
         <p>{selectedPhoto}</p>
 
       <IonButton onClick={() => {setSelectedPhoto(null)}}>update</IonButton>
-      </IonContent>
-    </IonPage>
+    </Page>
   );
 };
 
