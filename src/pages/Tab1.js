@@ -10,7 +10,7 @@ import useForceUpdate from 'use-force-update';
 const Tab1 = (props) => {
 
   const { takePhoto, photos, deletePhoto } = usePhotoGallery();
-  const [selectedPhoto, setSelectedPhoto] = useState();
+  const [selectedPhoto, setSelectedPhoto] = useState('whatever');
   const forceUpdate = useForceUpdate();
 
   console.log('PHOTOS RETURNED:');
@@ -35,7 +35,7 @@ const Tab1 = (props) => {
             {photos.map((photo, index) => (
               <IonCol size="6" key={index}>
                 <IonImg onClick={() => {
-                    setSelectedPhoto(photo.pathname)
+                    setSelectedPhoto(Math.random())
                     props.history.push({
                       pathname: '/details/'+photo.filepath,
                       photo: photo
@@ -54,7 +54,7 @@ const Tab1 = (props) => {
           </IonFabButton>
         </IonFab>
 
-        {selectedPhoto}
+        <p>{selectedPhoto}</p>
 
       <IonButton onClick={() => {setSelectedPhoto(null)}}>update</IonButton>
       </IonContent>
