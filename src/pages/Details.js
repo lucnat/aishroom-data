@@ -1,15 +1,14 @@
 
 import React from 'react';
 import Page from '../components/Page';
-import { IonImg, IonButton, IonSelect, IonList, IonLabel, IonSelectOption, IonItem, IonIcon, isPlatform, IonLoading } from '@ionic/react';
+import Photo from '../components/Photo';
+import { IonButton, IonLoading, IonList, IonItem, IonLabel, IonSelectOption, IonSelect, IonIcon } from '@ionic/react';
+import files from '../components/files';
 import classes from '../data/classes';
-import { useState } from 'react';
-import { usePhotoGallery } from '../hooks/usePhotoGallery';
-import { useStorage } from '@ionic/react-hooks/storage';
-import { cloudDoneOutline } from 'ionicons/icons';
-import useForceUpdate from 'use-force-update';
-import { base64Path, useFilesystem } from '@ionic/react-hooks/filesystem';
+import { cloudDoneOutline, trash, trashOutline, cloudOutline } from 'ionicons/icons';
 
+var Dropbox = require('dropbox').Dropbox
+var dbx = new Dropbox({ accessToken: 'qCS5xD40AqkAAAAAAAAAAVqN9sMKd6-OWVvzeeltk48woYw7UMUMclGDqhFsjLvu'})
 
 function dataURLtoFile(dataurl, filename) {
   var arr = dataurl.split(','),
@@ -24,86 +23,105 @@ function dataURLtoFile(dataurl, filename) {
   return new File([u8arr], filename, {type:mime});
 }
 
-var Dropbox = require('dropbox').Dropbox
-var dbx = new Dropbox({ accessToken: 'qCS5xD40AqkAAAAAAAAAAVqN9sMKd6-OWVvzeeltk48woYw7UMUMclGDqhFsjLvu'})
+export default class extends React.Component {
 
-export const Details = (props) => {
-  
-  const {photos, deletePhoto, updatePhoto} = usePhotoGallery();
-  const currentFilepath = props.match.params.filepath
-  const photo = photos.filter(p => (p.filepath == currentFilepath))[0]
-  const [loading, setLoading] = useState(false)
-  const { readFile } = useFilesystem();
+  state = {
+    loading: false,
+    base64: false
+  }
 
-  const forceUpdate = useForceUpdate();
-  if(!photo) return <Page />
+  constructor(props) {
+    super(props);
+    this.image = React.createRef();
+  }
 
-  const uploadImage = async () => {
-    setLoading(true);
-    setTimeout(() => {setLoading(false)}, 20000)
-    let file;
-    let base64data;
-    if(isPlatform('hybrid')) {
-      file = await readFile({
-        path: photo.filepath
-      });
-      base64data = file.data;
-      base64data = "data:image/jpeg;base64,"+base64data;
 
-      console.log('base64:')
-      console.log(base64data.substring(0,100));
-    } else {
-      // on desktop 
-      base64data = photo.base64
+  async delete() {
+    if(!window.confirm('sicher?')) return;
+    const path = this.props.match.params.path;
+    files.filesystem.deleteFile({
+      path: path,
+      directory: files.dataDirectory
+    });
+    this.props.history.goBack();
+  }
+
+  async upload() {
+
+    const path = this.props.match.params.path;
+    const photoInfo = JSON.parse(localStorage.getItem(path));
+    if(!photoInfo || !photoInfo.category) { alert('Bitte Kategorie wählen'); return; }
+
+    if(!localStorage.getItem('username')) {
+      const username = prompt('Username eingeben (mind. 3 Zeichen, einmalig):');
+      if(!username || username.length < 3) { alert('zu kurz');return;} 
+      localStorage.setItem('username',username);
     }
-    const filename = photo.category + '/' + localStorage.getItem('username')+'-'+ new Date().getTime() + '.jpg';
-    file = dataURLtoFile(base64data,filename);
+
+    this.setState({loading: true});
+    
+    const actualBase64 = 'data:image/jpeg;base64,'+this.state.base64;
     dbx.filesUpload({
-      path: '/'+filename,
-      contents: file,
+      path: '/'+photoInfo.category + '/'+localStorage.getItem('username')+'-'+path,
+      contents: dataURLtoFile(actualBase64,path),
       autorename: true
     }).then(r => {
-      console.log(r);
-      photo.uploaded = true;
-      updatePhoto(photo);
-      forceUpdate();
-      setLoading(false);
+      alert('Uplaod erfolgreich');
+      this.setState({loading: false});
+      photoInfo.uploaded = true;
+      localStorage.setItem(path, JSON.stringify(photoInfo));
+      this.forceUpdate();
     });
 
   }
 
-  return (
-    <Page backTo="/tab1">
-        <IonImg src={photo.base64 ?? photo.webviewPath} />
-        <div style={{padding: 15}}>
-          <IonList>
-            <IonItem>
-              <IonLabel>Kategorie</IonLabel>
-              <IonSelect value={photo.category} onIonChange={e => {
-                  photo.category = e.target.value;
-                  updatePhoto(photo);
-                  forceUpdate();
-                }}>
-                {classes.map(c => <IonSelectOption key={c} value={c}>{c}</IonSelectOption>)}
-              </IonSelect>
-            </IonItem>
-          </IonList>
-          <div style={{padding: 15}}>
-            <IonButton onClick={() => {
-              deletePhoto(photo);
-              props.history.goBack();
-            }}>Löschen</IonButton>
-            <br />
+  renderCategorySelection() {
+    const path = this.props.match.params.path;
+    let photoInfo = JSON.parse(localStorage.getItem(path));
+    if(!photoInfo) photoInfo = {};
 
-            <IonLoading isOpen={loading}/>
-            {photo.uploaded ? 
-                <p> <IonIcon icon={cloudDoneOutline} style={{width: 30, height: 30}}/> <br />Upload erfolgreich</p>
-                : 
-                <IonButton onClick={uploadImage}>In unsere Cloud hochladen</IonButton>  
+    return (
+      <IonList style={{marginRight: 20}}>
+        <IonItem>
+          <IonLabel>Kategorie</IonLabel>
+          <IonSelect value={photoInfo.category} onIonChange={e => {
+            photoInfo.category = e.target.value;
+            localStorage.setItem(path, JSON.stringify(photoInfo));
+          }}>
+            {classes.map(c => <IonSelectOption key={c}>{c}</IonSelectOption>)}
+          </IonSelect>
+        </IonItem>
+      </IonList>
+    );
+  }
+
+  render() {
+    const path = this.props.match.params.path;
+    const photoInfo = JSON.parse(localStorage.getItem(path));
+    const isUploaded = photoInfo && photoInfo.uploaded;
+    return (
+      <Page title="Kategorie zuweisen" large backTo="/fieldbook">
+        {this.renderCategorySelection()}
+        <br />
+        <Photo onLoaded={base64 => { this.setState({base64})}} ref={this.image} path={path}/>
+        <IonLoading isOpen={this.state.loading} /> 
+        <div style={{display: 'flex', padding: 15}}>
+          <div style={{flex: 1}}>
+          {isUploaded ? 
+            <div style={{color: 'var(--ion-color-primary)'}}><IonIcon icon={cloudDoneOutline} style={{width: 30, height: 30}} /> <br /> Upload erfolgreich</div>  :
+            <IonButton onClick={this.upload.bind(this)}>Bild Hochladen</IonButton>
             }
-
           </div>
+          <div style={{display: 'inline-block'}}>
+            <IonButton slot="end" color="danger" onClick={this.delete.bind(this)}>
+              <IonIcon icon={trashOutline}/>
+            </IonButton>
+          </div>
+
         </div>
-    </Page>
-  )
+      </Page>
+    )
+  }
+
 }
+

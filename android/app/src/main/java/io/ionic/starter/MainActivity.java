@@ -1,4 +1,4 @@
-package com.naterop.aishroomdata;
+package io.ionic.starter;
 
 import android.os.Bundle;
 

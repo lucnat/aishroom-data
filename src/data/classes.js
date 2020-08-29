@@ -12,7 +12,8 @@ const classes = [
   'Pfifferlinge',
   'Schopf-Tintling',
   'Speise-Morchel',
-  'Toten-Trompete'
+  'Toten-Trompete',
+  'Andere'
 ];
 
 export default classes;

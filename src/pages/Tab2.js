@@ -6,11 +6,11 @@ import Page from '../components/Page';
 class Tab2 extends React.Component {
   render() {
     return (
-      <Page title="About" large padding>
+      <Page title="About" large padding >
         <p>Dein username lautet <b>{localStorage.getItem('username')}</b>. <br/><a href="#" onClick={e => {
           e.preventDefault();
           const username = prompt('Username eingeben (mind. 3 Zeichen)');
-          if(username.length < 3) alert('zu kurz')
+          if(!username || username.length < 3) alert('zu kurz')
           else localStorage.setItem('username',username);
           this.forceUpdate();
         }} >ändern </a></p>
@@ -29,8 +29,8 @@ class Tab2 extends React.Component {
         <br />
 
         <i>aishroom-data app v1.0</i>
-      </Page>
 
+      </Page>
     )
   }
 }

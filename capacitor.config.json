@@ -1,6 +1,6 @@
 {
-  "appId": "com.naterop.aishroomdata",
-  "appName": "photo-gallery",
+  "appId": "com.naterop.datagather2",
+  "appName": "datagather2",
   "bundledWebRuntime": false,
   "npmClient": "npm",
   "webDir": "build",
